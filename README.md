@@ -1,6 +1,6 @@
 # weather-climate-ai-tutorials
 
-# 기상 데이터 탐색 및 분석 보고서
+# 기상 데이터 탐색
 
 ## 1. WeatherBench 2 ERA5 데이터 탐색 (2.wb2_eda.ipynb)
 
@@ -32,7 +32,7 @@
 
 ---
 
-# 2. SEVIR (Storm Event ImageRy) 데이터셋 분석 (3.sevir_eda.ipynb)
+## 2. SEVIR (Storm Event ImageRy) 데이터셋 분석 (3.sevir_eda.ipynb)
 
 극한 기상 이벤트 예측(**Nowcasting**) 딥러닝 모델 학습에 자주 사용되는 **고해상도 멀티모달 데이터셋 SEVIR**을 분석합니다.
 
