@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기상 및 기후 AI 데이터 분석 보고서</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2980b9;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+            margin-top: 40px;
+            background-color: #f8fbff;
+            padding: 10px 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+        }
+        p, li {
+            font-size: 1.05em;
+            color: #444;
+        }
+        .highlight-box {
+            background-color: #eef2f5;
+            border-left: 4px solid #7f8c8d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f6f8;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .dataset-tag {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .dataset-tag.era5 { background-color: #27ae60; }
+        .dataset-tag.sevir { background-color: #8e44ad; }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #95a5a6;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>기상 및 기후 AI 데이터 분석 보고서</h1>
+    <p>본 보고서는 기상 예측 및 딥러닝 기후 모델링을 위한 3개의 Jupyter Notebook 탐색적 데이터 분석(EDA) 결과를 요약하여 제공합니다. 각 파일은 클라우드 환경(GCS, S3)의 대용량 기상 데이터를 로드하여 전처리 및 분석하는 과정을 담고 있습니다.</p>
+
+    <h2>1. WeatherBench 2 (ERA5) 탐색적 분석 결과</h2>
+    <p><span class="dataset-tag era5">ERA5 Zarr</span> <code>2.wb2_eda.ipynb</code></p>
+    <p>Google Cloud Storage에 공개된 고해상도 재분석 자료인 ERA5를 Dask 기반 분산 처리로 불러와 2020년 서울 격자점의 <strong>월별 총 강수량 패턴</strong>을 분석했습니다.</p>
+    
+    <h3>📊 주요 분석 결과</h3>
+    <div class="highlight-box">
+        <ul>
+            <li><strong>데이터 스케일:</strong> 원본 (time: 93,544, lon: 240, lat: 121) 규모의 약 2TB 데이터를 메모리 효율적으로 타겟 시공간 필터링.</li>
+            <li><strong>월별 강수 분포 (2020년 서울 기준):</strong>
+                <ul>
+                    <li><strong>8월 (501.9mm, 33.3%)</strong>로 연중 강수량이 가장 높게 나타났습니다.</li>
+                    <li><strong>7월 (287.4mm, 19.1%)</strong>과 <strong>9월 (203.8mm, 13.5%)</strong>이 그 뒤를 이었습니다.</li>
+                </ul>
+            </li>
+            <li><strong>인사이트:</strong> 전형적인 동아시아 몬순 기후(여름철 장마 및 태풍)의 영향으로 7~9월에 전체 강수량의 약 66%가 집중되는 계절성을 뚜렷하게 확인했습니다.</li>
+        </ul>
+    </div>
+
+    <h2>2. SEVIR 폭풍 이벤트 데이터셋 EDA</h2>
+    <p><span class="dataset-tag sevir">SEVIR</span> <code>3.sevir_eda.ipynb</code></p>
+    <p>딥러닝 기상 예측(Nowcasting)을 위해 미국 대륙에서 관측된 멀티모달 기상 이미지 데이터셋(SEVIR)의 구조와 메타데이터를 파악했습니다. 하나의 이벤트는 4시간 길이의 시퀀스(5분 단위, 49프레임)로 구성됩니다.</p>
+
+    <h3>🛰️ 채널(센서) 구성 및 이벤트 통계</h3>
+    <p>S3에서 <code>CATALOG.csv</code> 파일을 스트리밍하여 분석한 결과, 총 <strong>76,004개</strong>의 시공간 메타데이터 레코드가 추출되었습니다.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>채널명</th>
+                <th>센서 및 설명</th>
+                <th>해상도</th>
+                <th>이벤트 건수</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>vil</code></td>
+                <td>수직 통합 액체 (NEXRAD 레이더 강수)</td>
+                <td>1 km</td>
+                <td>20,393 건</td>
+            </tr>
+            <tr>
+                <td><code>lght</code></td>
+                <td>번개 낙뢰 횟수 (Vaisala GLD360)</td>
+                <td>48×48 grid</td>
+                <td>15,115 건</td>
+            </tr>
+            <tr>
+                <td><code>ir069</code></td>
+                <td>수증기 채널 6.9 µm (GOES-16 위성)</td>
+                <td>2 km</td>
+                <td>13,552 건</td>
+            </tr>
+            <tr>
+                <td><code>ir107</code></td>
+                <td>열적외선 채널 10.7 µm (GOES-16 위성)</td>
+                <td>2 km</td>
+                <td>13,541 건</td>
+            </tr>
+            <tr>
+                <td><code>vis</code></td>
+                <td>가시광선 (GOES-16 위성)</td>
+                <td>0.5 km</td>
+                <td>13,403 건</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="highlight-box">
+        <strong>데이터셋 활용성:</strong> 각기 다른 물리적 특성을 가진 5개 센서 데이터가 동일한 시공간 격자로 정렬되어 있어 멀티모달(Multimodal) 딥러닝 훈련에 매우 적합한 상태임을 확인했습니다.
+    </div>
+
+    <h2>3. 재분석 모델(ERA5) vs 지상 관측(ASOS) 비교 분석</h2>
+    <p><span class="dataset-tag era5">ERA5 Zarr</span> <span class="dataset-tag">ASOS</span> <code>4.era5_asos_comparison.ipynb</code></p>
+    <p>2020년 서울 지역(STN 108)을 대상으로, 모델 재분석 데이터인 ERA5와 실제 지상 관측 자료인 ASOS 간의 오차율 및 통계적 일치도를 검증했습니다.</p>
+
+    <h3>📈 통계 지표 및 공간 대표성 해석</h3>
+    <p>시간 단위를 6시간(UTC)으로 맞추고 비교한 결과는 다음과 같습니다.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>비교 변수</th>
+                <th>평가 지표 구성 요건</th>
+                <th>설명</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>기온 (TA)</td>
+                <td rowspan="5">평균(Mean)<br>편향(Bias)<br>MAE<br>RMSE<br>상관계수(r)</td>
+                <td>°C 단위. 공간 해상도로 인한 열섬 효과 등 차이 발생 여부 분석</td>
+            </tr>
+            <tr>
+                <td>강수량 (RN)</td>
+                <td>6시간 누적 mm 단위. 연속 및 단발성 호우 패턴 비교</td>
+            </tr>
+            <tr>
+                <td>해면기압 (PS)</td>
+                <td>가장 안정적으로 상관계수(r)가 높게 나타나는 거시적 기상 변수</td>
+            </tr>
+            <tr>
+                <td>풍속 (WS)</td>
+                <td>지형(건물 등)의 마찰 효과에 따른 지상과 1.5° 격자 간의 속도 차이</td>
+            </tr>
+            <tr>
+                <td>상대습도 (RH)</td>
+                <td>수증기량 변화에 따른 ERA5와 ASOS 센서 값의 일치도 검증</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="highlight-box">
+        <strong>💡 핵심 인사이트 (공간 대표성 차이)</strong><br>
+        ERA5 데이터는 약 <strong>1.5° × 1.5° 크기의 넓은 격자</strong>를 하나의 값으로 대표하는 반면, ASOS는 <strong>특정 도심 지점</strong>의 핀포인트 관측값입니다. 이로 인해 다음과 같은 현상이 발견됩니다.<br><br>
+        <ul>
+            <li><strong>기온 Bias 편향:</strong> 기온 Bias가 (+)인 경우 ERA5가 과대 모의되었거나 ASOS 위치가 주변보다 서늘함을 의미하며, (-)인 경우 도시 열섬 효과로 인해 ASOS의 기온이 더 높게 관측되었음을 시사합니다.</li>
+            <li>풍속의 경우 도심 빌딩 숲에 의한 마찰력 증가로 국지적 풍속 감소가 ASOS에서 더 크게 나타날 수 있습니다.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Generated by AI Assistant · 분석 대상 파일: WeatherBench2 EDA, SEVIR EDA, ERA5 vs ASOS Comparison</p>
+    </div>
+</div>
+
+</body>
+</html>
